@@ -1,0 +1,110 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "TESTPORTAL",
+    "dateExported": "2023-12-03T14:53:07.325Z",
+    "version": "1.1",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "e42c61ed-9167-4433-8141-bb54b7d2bfa2",
+            "colId": "a0e1348e-6e46-4dbf-baf8-cdab3b3a6bba",
+            "containerId": "",
+            "name": "REGISTER  {auth/register}",
+            "url": "/auth/register",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2023-12-03T10:49:41.094Z",
+            "modified": "2023-12-03T11:02:50.829Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\": \"KUNAL TEST\",\n  \"orgId\": \"FUS-SOFT-132\",\n  \"email\": \"kunal.soni@fusionfirst.com\",\n  \"team\": \"Software\",\n  \"password\": \"1234567890\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "35557d4a-0593-4634-99df-066b10330cb6",
+            "colId": "a0e1348e-6e46-4dbf-baf8-cdab3b3a6bba",
+            "containerId": "",
+            "name": "Login",
+            "url": "/auth/login",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-12-03T10:56:18.744Z",
+            "modified": "2023-12-03T11:02:58.227Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"username\": \"KUNAL TEST\",\n  \"password\": \"1234567890\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "1aa80ba0-ea5b-45f2-b7a8-dc82c226d0bd",
+            "colId": "a0e1348e-6e46-4dbf-baf8-cdab3b3a6bba",
+            "containerId": "",
+            "name": "AddTeam",
+            "url": "/admin/addTeam",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2023-12-03T11:07:49.116Z",
+            "modified": "2023-12-03T11:08:58.343Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"TEST\",\n  \"heads\": [\n    \"kunal\",\n    \"soni\"\n  ]\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "46b1e0f0-d5cf-40e2-a8fa-2e7b800d359b",
+            "colId": "a0e1348e-6e46-4dbf-baf8-cdab3b3a6bba",
+            "containerId": "",
+            "name": "AddPermission",
+            "url": "/admin/permission",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2023-12-03T11:33:40.052Z",
+            "modified": "2023-12-03T11:57:28.871Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"TEST1\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "6ad36e09-69d6-4245-a4e5-0e6aee51b9c7",
+            "colId": "a0e1348e-6e46-4dbf-baf8-cdab3b3a6bba",
+            "containerId": "",
+            "name": "AddRole",
+            "url": "/admin/role",
+            "method": "POST",
+            "sortNum": 50000,
+            "created": "2023-12-03T11:38:17.487Z",
+            "modified": "2023-12-03T11:49:37.893Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"SuperAdmin\",\n  \"permissions\": [\n    \"TEST\", \"Kunal\"\n    ]\n}",
+                "form": []
+            },
+            "tests": []
+        }
+    ],
+    "settings": {
+        "options": {
+            "baseUrl": "http://localhost:8000"
+        },
+        "envId": "2684c60e-b560-481f-b437-aef9d0e8c930"
+    }
+}

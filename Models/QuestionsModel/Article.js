@@ -6,6 +6,16 @@ const ArticleSchema = new Schema({
     // required: true,
     // unique:true
   },
+  category: {
+    type: String,
+    // required: true,
+    // unique:true
+  },
+  paragraph: {
+    type: String,
+    // required: true,
+    // unique:true
+  },
   questions: [
     {
       text: {
@@ -17,16 +27,16 @@ const ArticleSchema = new Schema({
         type: [
           {
             type: String,
-            validate: {
-              validator: function (v) {
-                return v.length <= 4;
-              },
-              message: (props) =>
-                `${props.value} exceeds the maximum limit of 4 options!`,
-            },
           },
         ],
         required: true,
+        validate: {
+          validator: function (v) {
+            return v.length <= 4;
+          },
+          message: (props) =>
+            `${props.value} exceeds the maximum limit of 4 options!`,
+        },
       },
       correctAnswer: {
         type: String,
@@ -36,4 +46,4 @@ const ArticleSchema = new Schema({
   ],
 });
 
-export default model('Article', ArticleSchema)
+export default model("Article", ArticleSchema);

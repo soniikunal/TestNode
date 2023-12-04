@@ -13,17 +13,19 @@ router.post("/register", async (req, res) => {
     orgId: req.body.orgId,
     email: req.body.email,
     team: req.body.team,
-    password: CryptoJS.AES.encrypt(
-      req.body.password,
-      process.env.CRYPTO_KEY
-    ).toString(),
+    password:
+      req.body.password ?
+      CryptoJS.AES.encrypt(
+        req.body.password,
+        process.env.CRYPTO_KEY
+      ).toString() : undefined
   });
 
   try {
     const savedUser = await newUser.save();
     res.status(201).json(savedUser);
   } catch (error) {
-    res.status(500).json(error);
+    handleServerError(res, error);
   }
 });
 

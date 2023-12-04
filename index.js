@@ -8,11 +8,13 @@ dotenv.config();
 
 import { authRoutes } from './Routes/auth.js';
 import { teamRoutes } from './Routes/Admin/Team.js';
+import { articleRoutes } from './Routes/Question/ArticleRoutes.js';
 
 import './DB/connection.js';
 
 app.use('/auth', authRoutes)
 app.use('/admin', teamRoutes)
+app.use('/admin', articleRoutes)
 
 
 

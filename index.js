@@ -6,15 +6,17 @@ const port = process.env.PORT || 3000;
 app.use(json())
 dotenv.config();
 
+import './DB/connection.js';
+
 import { authRoutes } from './Routes/auth.js';
 import { teamRoutes } from './Routes/Admin/Team.js';
-import { articleRoutes } from './Routes/Question/ArticleRoutes.js';
-
-import './DB/connection.js';
+import { articleRoutes } from './Routes/Admin/Question/ArticleRoutes.js';
+import { questionRoutes } from './Routes/Admin/Question/QuestionRoutes.js';
 
 app.use('/auth', authRoutes)
 app.use('/admin', teamRoutes)
 app.use('/admin', articleRoutes)
+app.use('/admin', questionRoutes)
 
 
 

@@ -9,16 +9,16 @@ const QuestionsSchema = new Schema({
     type: [
       {
         type: String,
-        validate: {
-          validator: function (v) {
-            return v.length <= 4;
-          },
-          message: (props) =>
-            `${props.value} exceeds the maximum limit of 4 options!`,
-        },
       },
     ],
     required: true,
+    validate: {
+      validator: function (v) {
+        return v.length <= 4;
+      },
+      message: (props) =>
+        `${props.value} exceeds the maximum limit of 4 options!`,
+    },
   },
   correctAnswer: {
     type: String,

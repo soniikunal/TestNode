@@ -10,4 +10,9 @@ const successfullResponse = (res, message) => {
   return res.status(404).json({ error: message || "Not found" });
 };
 
-export { handleServerError, handleNotFound };
+const generateUniqueCode= () => {
+  const code = Math.floor(1000 + Math.random() * 9000); // Generates a random 4-digit number
+  return code.toString(); // Convert to string
+}
+
+export { handleServerError, handleNotFound, generateUniqueCode };

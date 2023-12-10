@@ -1,9 +1,15 @@
 import { Schema, model } from "mongoose";
+import { generateUniqueCode } from "../../Middlewares/middle";
 
 const QuestionsSchema = new Schema({
   question: {
     type: String,
     // required:true
+  },
+  uniqueCode: {
+    type: String,
+    default: generateUniqueCode,
+    unique: true,
   },
   options: {
     type: [
@@ -49,6 +55,5 @@ const QuestionsSchema = new Schema({
     contentType: String,
   },
 });
-
 
 export default model("Question", QuestionsSchema);

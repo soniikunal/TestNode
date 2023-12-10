@@ -6,6 +6,11 @@ const ArticleSchema = new Schema({
     // required: true,
     // unique:true
   },
+  uniqueCode: {
+    type: String,
+    default: generateUniqueCode,
+    unique: true,
+  },
   category: {
     type: String,
     // required: true,

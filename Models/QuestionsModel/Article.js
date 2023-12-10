@@ -16,9 +16,9 @@ const ArticleSchema = new Schema({
     // required: true,
     // unique:true
   },
-  questions: [
+  mcq: [
     {
-      text: {
+      question: {
         type: String,
         // required: true,
         // unique:true

@@ -17,7 +17,7 @@ router.post("/addArticle", async (req, res) => {
     name: req.body.name,
     category: req.body.category,
     paragraph: req.body.paragraph,
-    questions: req.body.questions,
+    mcq: req.body.mcq,
   });
 
   try {
@@ -32,14 +32,14 @@ router.put("/updateArticle/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
-    const updatedArticle = await Teams.findByIdAndUpdate(
+    const updatedArticle = await Article.findByIdAndUpdate(
       id,
       {
         $set: {
           name: req.body.name,
           category: req.body.category,
           paragraph: req.body.paragraph,
-          questions: req.body.questions,
+          mcq: req.body.mcq,
         },
       },
       { new: true }

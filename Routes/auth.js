@@ -42,7 +42,7 @@ router.post("/login", async (req, res) => {
         const accessToken = jwt.sign(
           {
             id: savedUser._id,
-            isAdmin: savedUser.Roles,
+            roles: savedUser.Roles,
           },
           process.env.JWT_SECRET_KEY,
           {
@@ -61,5 +61,13 @@ router.post("/login", async (req, res) => {
     res.status(401).json(error);
   }
 });
+
+// router.get('/test', async(req, res)=> {
+//   try {
+//     res.send('hi')
+//   } catch (error) {
+//     res.status(401).json(error);
+//   }
+// })
 
 export { router as authRoutes };

@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { generateUniqueCode } from "../../Middlewares/middle.js";
 
 const ArticleSchema = new Schema({
   name: {
@@ -21,7 +22,7 @@ const ArticleSchema = new Schema({
     // required: true,
     // unique:true
   },
-  mcq: [
+  queArray: [
     {
       question: {
         type: String,

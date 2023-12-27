@@ -22,8 +22,13 @@ import { articleRoutes } from "./Routes/Admin/Question/ArticleRoutes.js";
 import { questionRoutes } from "./Routes/Admin/Question/QuestionRoutes.js";
 import { ATDQuestionRoutes } from "./Routes/Admin/Question/ATDQuestionRoutes.js";
 import { categoryRoutes } from "./Routes/Admin/Category.js";
+import { jwtMiddleware } from "./Middlewares/JwtMiddleware.js";
+import { isAdmin } from "./Middlewares/RoleMiddleware.js";
 
 app.use("/auth", authRoutes);
+// app.use(jwtMiddleware) //For verifying JWT
+// app.use(isAdmin) //For verifying user is admin?
+
 app.use("/admin", teamRoutes);
 app.use("/admin", articleRoutes);
 app.use("/admin", questionRoutes);

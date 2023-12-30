@@ -22,54 +22,59 @@ router.get("/getQuestions", async (req, res) => {
 });
 
 router.post("/addQuestion", multerConfig, async (req, res) => {
-  const newQuestion = new QuestionsSchema({
+  const newQuestionData = {
     question: req.body.question,
     options: req.body.options,
     correctOpt: req.body.correctOpt,
     category: req.body.category,
-    imgPath: `/uploads/${req.file?req.file.filename: 'noImage.png'}`,
-    answer: req.body.answer,
-  });
+  };
+  if (req.file && req.file.filename) {
+    newQuestionData.imgPath = `/uploads/${req.file.filename}`;
+  }
+  
+  const newQuestion = new QuestionsSchema(newQuestionData);
 
   try {
     const savedQuestion = await newQuestion.save();
-    res.status(201).json(savedQuestion);
+    res.status(201).json({message: "Question Added Successfully!",savedQuestion});
   } catch (error) {
     handleServerError(res, error);
   }
 });
 
-// router.post('/upload', multerConfig, (req, res) => {
-//   const { filename, path } = req.file;
-
-//   // Save the filename and path to the database if needed
-
-//   res.json({ filename, path });
-// });
-
-router.put("/updateQuestion/:id", async (req, res) => {
+router.put("/updateQuestion/:id",multerConfig, async (req, res) => {
   const id = req.params.id;
 
   try {
+    const updateData = {
+      $set: {
+        question: req.body.question,
+        options: req.body.options,
+        correctOpt: req.body.correctOpt,
+        category: req.body.category,
+      },
+    };
+    
+    // Add imgPath conditionally
+    if (req.file && req.file.filename) {
+      updateData.$set.imgPath = `/uploads/${req.file.filename}`;
+    } else {
+      updateData.$set.imgPath = ``;
+      updateData.$unset = { imgPath: 1 };
+
+    }
+    
     const updatedQuestions = await QuestionsSchema.findByIdAndUpdate(
       id,
-      {
-        $set: {
-          question: req.body.question,
-          options: req.body.options,
-          correctOpt: req.body.correctOpt,
-          answer: req.body.answer,
-          category: req.body.category,
-        },
-      },
+      updateData,
       { new: true }
-    ).exec();
+    ).exec();    
 
     if (!updatedQuestions) {
       return handleNotFound(res, "Question not found");
     }
 
-    res.status(201).json(updatedQuestions);
+    res.status(201).json({ message: "Question Edited Successfully", updatedQuestions});
   } catch (error) {
     handleServerError(res, error);
   }
@@ -88,7 +93,7 @@ router.delete("/delQuestion/:id", async (req, res) => {
     // Use status code 200 for successful deletion
     res
       .status(200)
-      .json({ message: "Question deleted successfully", deletedQuestion });
+      .json({ message: "Question Deleted Successfully", deletedQuestion });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }

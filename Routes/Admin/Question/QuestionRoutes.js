@@ -1,7 +1,12 @@
 import express from "express";
 const router = express.Router();
 import QuestionsSchema from "../../../Models/QuestionsModel/Question.js";
-import { handleServerError, handleNotFound } from "../../../Middlewares/middle.js";
+import { multerConfig } from "../../../Middlewares/imageUpload.js";
+import {
+  handleServerError,
+  handleNotFound,
+} from "../../../Middlewares/middle.js";
+import { isAdmin } from "../../../Middlewares/RoleMiddleware.js";
 
 router.get("/getQuestions", async (req, res) => {
   try {
@@ -10,16 +15,19 @@ router.get("/getQuestions", async (req, res) => {
     if (!allQuestions) {
       return handleNotFound(res, "Question not found");
     }
-  } catch (error) {}
+    res.status(201).json(allQuestions);
+  } catch (error) {
+    res.status(500).json(error);
+  }
 });
 
-router.post("/addQuestion", async (req, res) => {
+router.post("/addQuestion", multerConfig, async (req, res) => {
   const newQuestion = new QuestionsSchema({
     question: req.body.question,
     options: req.body.options,
-    correctAnswer: req.body.correctAnswer,
-    IsDescriptive: req.body.IsDescriptive,
+    correctOpt: req.body.correctOpt,
     category: req.body.category,
+    imgPath: `/uploads/${req.file?req.file.filename: 'noImage.png'}`,
     answer: req.body.answer,
   });
 
@@ -31,6 +39,14 @@ router.post("/addQuestion", async (req, res) => {
   }
 });
 
+// router.post('/upload', multerConfig, (req, res) => {
+//   const { filename, path } = req.file;
+
+//   // Save the filename and path to the database if needed
+
+//   res.json({ filename, path });
+// });
+
 router.put("/updateQuestion/:id", async (req, res) => {
   const id = req.params.id;
 
@@ -41,8 +57,7 @@ router.put("/updateQuestion/:id", async (req, res) => {
         $set: {
           question: req.body.question,
           options: req.body.options,
-          correctAnswer: req.body.correctAnswer,
-          IsDescriptive: req.body.IsDescriptive,
+          correctOpt: req.body.correctOpt,
           answer: req.body.answer,
           category: req.body.category,
         },
@@ -71,7 +86,9 @@ router.delete("/delQuestion/:id", async (req, res) => {
     }
 
     // Use status code 200 for successful deletion
-    res.status(200).json({ message: "Question deleted successfully", deletedQuestion });
+    res
+      .status(200)
+      .json({ message: "Question deleted successfully", deletedQuestion });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }

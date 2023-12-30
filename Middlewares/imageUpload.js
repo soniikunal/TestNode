@@ -1,14 +1,18 @@
-import multer from "multer";
+// multerConfig.js
+import multer from 'multer';
+import path from 'path';
 
-// Set up multer storage
-const storage = multer.memoryStorage(); // Use memory storage for storing image in memory
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        debugger
+        cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+        const ext = path.extname(file.originalname);
+        cb(null, Date.now() + ext);
+    },
+});
 
-// Set up multer instance
-const upload = multer({ storage: storage });
+const multerConfig = multer({ storage: storage }).single('avatar');
 
-// Middleware for handling single image uploads
-const imageUpload = (fieldName) => {
-  return upload.single(fieldName);
-};
-
-export { imageUpload };
+export { multerConfig };

@@ -17,7 +17,7 @@ router.post("/addArticle", async (req, res) => {
     name: req.body.name,
     category: req.body.category,
     paragraph: req.body.paragraph,
-    mcq: req.body.mcq,
+    queArray: req.body.queArray,
   });
 
   try {
@@ -39,7 +39,7 @@ router.put("/updateArticle/:id", async (req, res) => {
           name: req.body.name,
           category: req.body.category,
           paragraph: req.body.paragraph,
-          mcq: req.body.mcq,
+          queArray: req.body.queArray,
         },
       },
       { new: true }

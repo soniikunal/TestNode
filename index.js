@@ -2,6 +2,7 @@ import express, { json } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import bodyParser from "body-parser";
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -25,6 +26,10 @@ import { categoryRoutes } from "./Routes/Admin/Category.js";
 import { jwtMiddleware } from "./Middlewares/JwtMiddleware.js";
 import { isAdmin } from "./Middlewares/RoleMiddleware.js";
 
+// Use body-parser middleware with increased payload limit
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+
 app.use("/auth", authRoutes);
 // app.use(jwtMiddleware) //For verifying JWT
 // app.use(isAdmin) //For verifying user is admin?
@@ -36,12 +41,7 @@ app.use("/admin", categoryRoutes);
 app.use("/admin/ATD", ATDQuestionRoutes);
 
 // //Serve static files from the 'uploads' directory
-// app.use("/uploads", express.static("uploads"));
-
-// // Use body-parser middleware with increased payload limit
-// app.use(bodyParser.json({ limit: '10mb' }));
-// app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
-
+app.use("/uploads", express.static("uploads"));
 
 
 app.get("/", (req, res) => {

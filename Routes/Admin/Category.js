@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import { categorySchema } from "../../Models/QuestionsModel/Category.js";
+import categorySchema from "../../Models/QuestionsModel/Category.js";
 import { handleServerError, handleNotFound } from "../../Middlewares/middle.js";
 
 router.get("/allCategories", async (req, res) => {
@@ -8,7 +8,7 @@ router.get("/allCategories", async (req, res) => {
     const allCategories = await categorySchema.find();
     res.status(200).json(allCategories);
   } catch (error) {
-    handleServerError(req, error);
+    handleServerError(res, error);
   }
 });
 
@@ -21,7 +21,7 @@ router.post("/addCategory", async (req, res) => {
     const savedCategory = await newCategory.save();
     res.status(200).json(savedCategory);
   } catch (error) {
-    handleServerError(req, error);
+    handleServerError(res, error);
   }
 });
 
@@ -29,7 +29,7 @@ router.put("/updateCategory/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
-    const updatedCategory = categorySchema.findByIdAndUpdate(
+    const updatedCategory = await categorySchema.findByIdAndUpdate(
       id,
       {
         $set: { name: req.body.name, heads: req.body.heads },
@@ -42,7 +42,7 @@ router.put("/updateCategory/:id", async (req, res) => {
 
     res.status(200).json(updatedCategory);
   } catch (error) {
-    handleServerError(req, error);
+    handleServerError(res, error);
   }
 });
 
@@ -58,7 +58,7 @@ router.delete("/delCategory/:id", async (req, res) => {
 
     res.status(200).json(deletedCategory);
   } catch (error) {
-    handleServerError(req, error);
+    handleServerError(res, error);
   }
 });
 

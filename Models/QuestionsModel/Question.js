@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { generateUniqueCode } from "../../Middlewares/middle";
+import { generateUniqueCode } from "../../Middlewares/middle.js";
 
 const QuestionsSchema = new Schema({
   question: {
@@ -18,9 +18,6 @@ const QuestionsSchema = new Schema({
       },
     ],
     // required: true,
-    required: function () {
-      return !this.IsDescriptive;
-    },
     validate: {
       validator: function (v) {
         return v.length <= 4;
@@ -29,14 +26,9 @@ const QuestionsSchema = new Schema({
         `${props.value} exceeds the maximum limit of 4 options!`,
     },
   },
-  correctAnswer: {
-    type: String,
+  correctOpt: {
+    type: Number,
     // required: true
-  },
-  //   difficulty: { type: String, enum: ["Easy", "Medium", "Hard"] },
-  IsDescriptive: {
-    type: Boolean,
-    default: false,
   },
   category: {
     type: String,
@@ -44,16 +36,22 @@ const QuestionsSchema = new Schema({
     // ref: "Category",
     // required:true
   },
-  answer: {
+  imgPath: {
     type: String,
-    required: function () {
-      return this.IsDescriptive;
-    },
+    // data: Buffer,
+    // contentType: String,
   },
-  image: {
-    data: Buffer,
-    contentType: String,
-  },
+  //   difficulty: { type: String, enum: ["Easy", "Medium", "Hard"] },
+  // IsDescriptive: {
+  //   type: Boolean,
+  //   default: false,
+  // },
+  // answer: {
+  //   type: String,
+  //   required: function () {
+  //     return this.IsDescriptive;
+  //   },
+  // },
 });
 
 export default model("Question", QuestionsSchema);

@@ -23,12 +23,13 @@ import { articleRoutes } from "./Routes/Admin/Question/ArticleRoutes.js";
 import { questionRoutes } from "./Routes/Admin/Question/QuestionRoutes.js";
 import { ATDQuestionRoutes } from "./Routes/Admin/Question/ATDQuestionRoutes.js";
 import { categoryRoutes } from "./Routes/Admin/Category.js";
+import { PrescreeningTestRoutes } from "./Routes/Test/Prescreening.js";
 import { jwtMiddleware } from "./Middlewares/JwtMiddleware.js";
 import { isAdmin } from "./Middlewares/RoleMiddleware.js";
 
 // Use body-parser middleware with increased payload limit
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 app.use("/auth", authRoutes);
 // app.use(jwtMiddleware) //For verifying JWT
@@ -40,9 +41,10 @@ app.use("/admin", questionRoutes);
 app.use("/admin", categoryRoutes);
 app.use("/admin/ATD", ATDQuestionRoutes);
 
+app.use("/presTest", PrescreeningTestRoutes)
+
 // //Serve static files from the 'uploads' directory
 app.use("/uploads", express.static("uploads"));
-
 
 app.get("/", (req, res) => {
   res.send("Welcome to Express Server");

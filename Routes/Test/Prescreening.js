@@ -22,3 +22,5 @@ router.put("/updateSelectedAnswers/:id", async (req, res) => {
 router.post("/calculatePre/:id", async (req, res) => {
   await calPrescreenResult(req, res);
 });
+
+export { router as PrescreeningTestRoutes };

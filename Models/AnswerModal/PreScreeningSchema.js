@@ -24,7 +24,7 @@ const PreScreeningSchema = new Schema({
         ],
       },
       selectedAnswer: {
-        type: String,
+        type: Number,
         // required: true,
       },
       category: {

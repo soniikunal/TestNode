@@ -27,6 +27,7 @@ import { PrescreeningTestRoutes } from "./Routes/Test/Prescreening.js";
 import { jwtMiddleware } from "./Middlewares/JwtMiddleware.js";
 import { isAdmin } from "./Middlewares/RoleMiddleware.js";
 import { ATDTestRoutes } from "./Routes/Test/ATD.js";
+import { TestScoreRoutes } from "./Routes/Test/TestScore.js";
 
 // Use body-parser middleware with increased payload limit
 app.use(bodyParser.json({ limit: "10mb" }));
@@ -41,6 +42,7 @@ app.use("/admin", articleRoutes);
 app.use("/admin", questionRoutes);
 app.use("/admin", categoryRoutes);
 app.use("/admin/ATD", ATDQuestionRoutes);
+app.use("/admin/userRecord", TestScoreRoutes);
 
 app.use("/presTest", PrescreeningTestRoutes)
 app.use("/atdTest", ATDTestRoutes)

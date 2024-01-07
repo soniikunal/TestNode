@@ -22,7 +22,7 @@ const ATDAnswerSchema = new Schema({
         ],
       },
       selectedAnswer: {
-        type: String,
+        type: Number,
         // required: true,
       },
       category: {

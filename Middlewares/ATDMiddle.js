@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import ATDQuestionsSchema from "../Models/QuestionsModel/ATDQuestionSchema.js";
 import ATDAnswerSchema from "../Models/AnswerModal/ATDAnswerSchema.js";
+import { SaveResult } from "./TestMiddle.js";
 
 export const assignUserQuestions = async (userId, req, res) => {
   try {
@@ -102,9 +103,16 @@ export const calATDResult = async (req, res) => {
 
     const finalResult = await calculateResult(userAnswers);
     if (finalResult) {
-      const setIsSubmitted = await ATDAnswerSchema.findByIdAndUpdate(_id, {
-        $set: { isSubmitted: true },
-      });
+      const setIsSubmitted = await ATDAnswerSchema.findByIdAndUpdate(
+        _id,
+        {
+          $set: { isSubmitted: true },
+        },
+        { new: true }
+      );
+      if (setIsSubmitted) {
+        const savedResult = SaveResult(_id, finalResult, "ATD");
+      }
     }
 
     res.status(200).json({ finalResult });
@@ -136,5 +144,5 @@ const calculateResult = async (userAnswers) => {
     }
   }
 
-  return { score };
+  return score;
 };

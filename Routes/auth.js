@@ -70,4 +70,11 @@ router.post("/login", async (req, res) => {
 //   }
 // })
 
+router.post('/examLogin', (req,res)=>{
+try {
+  
+} catch (error) {
+  res.status(401).json(error)
+}
+})
 export { router as authRoutes };

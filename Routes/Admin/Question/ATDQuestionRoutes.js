@@ -7,6 +7,7 @@ import {
   handleServerError,
   handleNotFound,
 } from "../../../Middlewares/middle.js";
+import { multerConfig } from "../../../Middlewares/imageUpload.js";
 
 router.get("/getQuestions", async (req, res) => {
   try {
@@ -15,10 +16,11 @@ router.get("/getQuestions", async (req, res) => {
     if (!allQuestions) {
       return handleNotFound(res, "Question not found");
     }
+    res.status(200).json(allQuestions);
   } catch (error) {}
 });
 
-router.post("/addQuestion", async (req, res) => {
+router.post("/addQuestion", multerConfig, async (req, res) => {
   const newQuestion = new ATDQuestionSchema({
     question: req.body.question,
     options: req.body.options,
@@ -34,7 +36,7 @@ router.post("/addQuestion", async (req, res) => {
   }
 });
 
-router.put("/updateQuestion/:id", async (req, res) => {
+router.put("/updateQuestion/:id", multerConfig, async (req, res) => {
   const id = req.params.id;
 
   try {
@@ -82,9 +84,6 @@ router.delete("/delQuestion/:id", async (req, res) => {
 
 router.post("/submitTest", async (req, res) => {
   try {
-
-    
-
     const submittedData = new ATDAnswerSchema({
       userId: req.body.userId,
       attemptedQuestions: req.body.attemptedQuestions,
@@ -101,15 +100,13 @@ router.get("/calculateScore/:id", async (req, res) => {
   const userId = req.params.id;
 
   try {
-    const userSubmitData = await ATDAnswerSchema.find({userId})
+    const userSubmitData = await ATDAnswerSchema.find({ userId });
     const attemptedQuestions = userSubmitData.attemptedQuestions();
-    const questions = await QuestionModel.find({ _id: { $in: attemptedQuestions.map(id => mongoose.Types.ObjectId(id)) } });
-    console.log(userSubmitData.userId, userSubmitData.attemptedQuestions)
-  } catch (error) {
-    
-  }
-
-
+    const questions = await QuestionModel.find({
+      _id: { $in: attemptedQuestions.map((id) => mongoose.Types.ObjectId(id)) },
+    });
+    console.log(userSubmitData.userId, userSubmitData.attemptedQuestions);
+  } catch (error) {}
 });
 
 export { router as ATDQuestionRoutes };

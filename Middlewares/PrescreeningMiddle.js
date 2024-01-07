@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import PreScreeningSchema from "../Models/AnswerModal/PreScreeningSchema.js";
 import QuestionsSchema from "../Models/QuestionsModel/Question.js";
+import TestScoreSchema from "../Models/AnswerModal/TestScoreSchema.js";
+import { SaveResult } from "./TestMiddle.js";
 
 export const assignUserQuestions = async (userId, req, res) => {
   try {
@@ -8,9 +10,9 @@ export const assignUserQuestions = async (userId, req, res) => {
 
     if (existingUser) {
       if (existingUser._doc.isSubmitted === true) {
-        return res
-          .status(203)
-          .json({ message: "You have already submitted the Prescreening Test!" });
+        return res.status(203).json({
+          message: "You have already submitted the Prescreening Test!",
+        });
       }
       return res.status(200).json({
         message: "Your test is already in progress",
@@ -109,7 +111,7 @@ export const calPrescreenResult = async (req, res) => {
         $set: { isSubmitted: true },
       });
     }
-
+    SaveResult(_id, finalResult, "Prescreening");
     res.status(200).json({ finalResult });
   } catch (error) {
     console.error(error);
@@ -139,5 +141,5 @@ const calculateResult = async (userAnswers) => {
     }
   }
 
-  return { score };
+  return score;
 };

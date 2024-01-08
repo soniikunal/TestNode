@@ -1,11 +1,28 @@
 import express from "express";
 const router = express.Router();
 import Article from "../../../Models/QuestionsModel/Article.js";
-import { handleServerError, handleNotFound } from "../../../Middlewares/middle.js";
+import {
+  handleServerError,
+  handleNotFound,
+} from "../../../Middlewares/middle.js";
 
 router.get("/getArticles", async (req, res) => {
   try {
-    const allArticles = await Article.find();
+    const searchQuery = req.query.search;
+    let allArticles;
+    if (searchQuery) {
+      const regexQuery = new RegExp(searchQuery, "i");
+      allArticles = await Article.find({
+        $or: [
+          { category: { $regex: regexQuery } },
+          { uniqueCode: { $regex: regexQuery } },
+          { question: { $regex: regexQuery } },
+        ],
+      });
+    } else {
+      allArticles = await Article.find();
+    }
+
     res.status(201).json(allArticles);
   } catch (error) {
     handleServerError(res, error);
@@ -55,7 +72,7 @@ router.put("/updateArticle/:id", async (req, res) => {
 
 router.delete("/delArticle/:id", async (req, res) => {
   const articleId = req.params.id;
-  
+
   try {
     const deletedArticle = await Article.findByIdAndDelete(articleId);
 

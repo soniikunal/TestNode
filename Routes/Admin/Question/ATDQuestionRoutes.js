@@ -11,7 +11,20 @@ import { multerConfig } from "../../../Middlewares/imageUpload.js";
 
 router.get("/getQuestions", async (req, res) => {
   try {
-    const allQuestions = await ATDQuestionSchema.find();
+    const searchQuery = req.query.search;
+    let allQuestions;
+    if (searchQuery) {
+      const regexQuery = new RegExp(searchQuery, "i");
+      allQuestions = await ATDQuestionSchema.find({
+        $or: [
+          { category: { $regex: regexQuery } },
+          { uniqueCode: { $regex: regexQuery } },
+          { question: { $regex: regexQuery } },
+        ],
+      });
+    } else {
+      allQuestions = await ATDQuestionSchema.find();
+    }
 
     if (!allQuestions) {
       return handleNotFound(res, "Question not found");

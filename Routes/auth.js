@@ -1,9 +1,11 @@
-import express from "express";
+import express, { application } from "express";
 const router = express.Router();
+import axios from "axios";
 import User from "../Models/UsersModel/OrgUser.js";
 import CryptoJS from "crypto-js";
 import jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
+import ApplicantSchema from "../Models/UsersModel/ApplicantSchema.js";
 dotenv.config();
 
 //Register
@@ -13,12 +15,12 @@ router.post("/register", async (req, res) => {
     orgId: req.body.orgId,
     email: req.body.email,
     team: req.body.team,
-    password:
-      req.body.password ?
-      CryptoJS.AES.encrypt(
-        req.body.password,
-        process.env.CRYPTO_KEY
-      ).toString() : undefined
+    password: req.body.password
+      ? CryptoJS.AES.encrypt(
+          req.body.password,
+          process.env.CRYPTO_KEY
+        ).toString()
+      : undefined,
   });
 
   try {
@@ -70,11 +72,57 @@ router.post("/login", async (req, res) => {
 //   }
 // })
 
-router.post('/examLogin', (req,res)=>{
-try {
-  
-} catch (error) {
-  res.status(401).json(error)
-}
-})
+router.post("/examLogin", async (req, res) => {
+  try {
+    const { registerId, mailId } = req.body;
+    const erpObj = {
+      regid: registerId,
+      email: mailId,
+    };
+
+    const response = await axios.post(
+      "https://erp.fusionfirst.com/applicant/verify",
+      erpObj
+    );
+
+    const erpResponse = response.data;
+
+    if (!erpResponse) {
+      return res.status(500).json({
+        success: false,
+        message: "Server Error",
+        applicant: null,
+      });
+    } else if (erpResponse.success == true && erpResponse.applicant == null) {
+      return res.status(401).json({
+        success: false,
+        message: "Registration Id and Email didn't match!",
+        applicant: null,
+      });
+    } else if (erpResponse.success == true && erpResponse.applicant !== null) {
+      let savedApplicant;
+      savedApplicant = await ApplicantSchema.findOne({
+        AppID: erpResponse.applicant.AppID,
+      });
+
+      if (!savedApplicant) {
+        const ApplicantData = new ApplicantSchema(erpResponse.applicant);
+        savedApplicant = await ApplicantData.save();
+      }
+      const accessToken = jwt.sign(
+        {
+          id: savedApplicant.AppID,
+          roles: "New Recruit",
+        },
+        process.env.JWT_SECRET_KEY,
+        {
+          expiresIn: "1d",
+        }
+      );
+      return res.status(200).json({ erpResponse, accessToken });
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
 export { router as authRoutes };

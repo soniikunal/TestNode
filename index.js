@@ -9,7 +9,8 @@ const port = process.env.PORT || 3000;
 app.use(json());
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173",
+  "http://192.168.0.9:5173"],
     credentials: true,
   })
 );
@@ -33,8 +34,9 @@ import { TestScoreRoutes } from "./Routes/Test/TestScore.js";
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
+// //Serve static files from the 'uploads' directory
+app.use("/uploads", express.static("uploads"));
 app.use("/auth", authRoutes);
-// app.use(jwtMiddleware) //For verifying JWT
 // app.use(isAdmin) //For verifying user is admin?
 
 app.use("/admin", teamRoutes);
@@ -44,11 +46,10 @@ app.use("/admin", categoryRoutes);
 app.use("/admin/ATD", ATDQuestionRoutes);
 app.use("/admin/userRecord", TestScoreRoutes);
 
+app.use(jwtMiddleware) //For verifying JWT
 app.use("/presTest", PrescreeningTestRoutes)
 app.use("/atdTest", ATDTestRoutes)
 
-// //Serve static files from the 'uploads' directory
-app.use("/uploads", express.static("uploads"));
 
 app.get("/", (req, res) => {
   res.send("Welcome to Express Server");

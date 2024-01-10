@@ -6,6 +6,7 @@ import CryptoJS from "crypto-js";
 import jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
 import ApplicantSchema from "../Models/UsersModel/ApplicantSchema.js";
+import TestScoreSchema from "../Models/AnswerModal/TestScoreSchema.js";
 dotenv.config();
 
 //Register
@@ -79,7 +80,7 @@ router.post("/examLogin", async (req, res) => {
       regid: registerId,
       email: mailId,
     };
-
+debugger
     const response = await axios.post(
       "https://erp.fusionfirst.com/applicant/verify",
       erpObj
@@ -94,10 +95,12 @@ router.post("/examLogin", async (req, res) => {
         applicant: null,
       });
     } else if (erpResponse.success == true && erpResponse.applicant == null) {
-      return res.status(401).json({
-        success: false,
-        message: "Registration Id and Email didn't match!",
-        applicant: null,
+      return res.status(201).json({
+        erpResponse: {
+          success: true,
+          message: "Registration Id and Email didn't match!",
+          applicant: null,
+        },
       });
     } else if (erpResponse.success == true && erpResponse.applicant !== null) {
       let savedApplicant;
@@ -119,6 +122,15 @@ router.post("/examLogin", async (req, res) => {
           expiresIn: "1d",
         }
       );
+      const TestToAppear = await TestScoreSchema.findOne({
+        userId: erpResponse.applicant.AppID,
+      }).lean();
+      if (TestToAppear) {
+        const TestPending = Object.keys(TestToAppear).filter(
+          (key) => TestToAppear[key] === null
+        );
+        return res.status(200).json({ erpResponse, accessToken, TestPending });
+      }
       return res.status(200).json({ erpResponse, accessToken });
     }
   } catch (error) {

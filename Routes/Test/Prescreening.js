@@ -9,17 +9,17 @@ import {
 
 router.get("/test", async (req, res) => {
   try {
-    await assignUserQuestions("KUNALSOni", req, res);
+    await assignUserQuestions( req, res);
   } catch (error) {
     res.status(401).json(error);
   }
 });
 
-router.put("/updateSelectedAnswers/:id", async (req, res) => {
+router.put("/updateSelectedAnswers", async (req, res) => {
   await updateUserQuestion(req, res);
 });
 
-router.post("/calculatePre/:id", async (req, res) => {
+router.post("/calculatePre", async (req, res) => {
   await calPrescreenResult(req, res);
 });
 

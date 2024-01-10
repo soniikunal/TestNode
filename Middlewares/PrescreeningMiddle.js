@@ -4,8 +4,9 @@ import QuestionsSchema from "../Models/QuestionsModel/Question.js";
 import TestScoreSchema from "../Models/AnswerModal/TestScoreSchema.js";
 import { SaveResult } from "./TestMiddle.js";
 
-export const assignUserQuestions = async (userId, req, res) => {
+export const assignUserQuestions = async (req, res) => {
   try {
+    const userId = req.user.id;
     const existingUser = await PreScreeningSchema.findOne({ userId });
 
     if (existingUser) {
@@ -15,7 +16,7 @@ export const assignUserQuestions = async (userId, req, res) => {
         });
       }
       return res.status(200).json({
-        message: "Your test is already in progress",
+        message: "Your test is already in progress!",
         user: existingUser,
       });
     }
@@ -52,7 +53,7 @@ export const assignUserQuestions = async (userId, req, res) => {
 
 export const updateUserQuestion = async (req, res) => {
   try {
-    const identifier = req.params.id;
+    const identifier = req.user.id;
     const { questionId, selectedAnswer, remainingTime } = req.body;
 
     // Validate if questionId and selectedAnswer are present in the request body
@@ -63,22 +64,30 @@ export const updateUserQuestion = async (req, res) => {
       });
     }
 
-    const isObjectId = mongoose.Types.ObjectId.isValid(identifier);
-
     // Find and update the record based on userId or _id
     let updatedPreScreeningAnswer;
-    if (isObjectId) {
+    if (identifier) {
       // If identifier is a valid ObjectId, assume it's _id
-      updatedPreScreeningAnswer = await PreScreeningSchema.findByIdAndUpdate(
-        identifier,
+      // updatedPreScreeningAnswer = await PreScreeningSchema.findByIdAndUpdate(
+      //   identifier,
+      //   {
+      //     $set: {
+      //       "assignedQuestions.$[elem].selectedAnswer": selectedAnswer,
+      //       remainingTime,
+      //     },
+      //   },
+      //   { arrayFilters: [{ "elem._id": questionId }], new: true },
+      //   { new: true }
+      // );
+      updatedPreScreeningAnswer = await PreScreeningSchema.findOneAndUpdate(
+        { userId: identifier, "assignedQuestions._id": questionId },
         {
           $set: {
             "assignedQuestions.$[elem].selectedAnswer": selectedAnswer,
             remainingTime,
           },
         },
-        { arrayFilters: [{ "elem._id": questionId }], new: true },
-        { new: true }
+        { arrayFilters: [{ "elem._id": questionId }], new: true }
       );
     }
 
@@ -94,25 +103,32 @@ export const updateUserQuestion = async (req, res) => {
 
 export const calPrescreenResult = async (req, res) => {
   try {
-    const _id = req.params.id;
-
+    const userId = req.user.id;
     // Fetch the user's selected answers
-    const userAnswers = await PreScreeningSchema.findById(_id).lean();
-    // const userAnswers = await PreScreeningSchema.findOne({ userId });
+    // const userAnswers = await PreScreeningSchema.find(_id).lean();
+    const userAnswers = await PreScreeningSchema.findOne({ userId }).lean();
 
     if (!userAnswers) {
-      return res.status(404).json({ message: "User answers not found" });
+      return res.status(404).json({ message: "User's answers not found" });
     }
 
     // Perform your calculations based on the user's selected answers
     const finalResult = await calculateResult(userAnswers);
-    if (finalResult) {
-      const setIsSubmitted = await PreScreeningSchema.findByIdAndUpdate(_id, {
-        $set: { isSubmitted: true },
-      });
+    if (finalResult <= 0) {
+      // const setIsSubmitted = await PreScreeningSchema.findByIdAndUpdate(_id, {
+      //   $set: { isSubmitted: true },
+      // });
+      await PreScreeningSchema.findOneAndUpdate(
+        { userId },
+        {
+          $set: { isSubmitted: true },
+        }
+      );
     }
-    SaveResult(_id, finalResult, "Prescreening");
-    res.status(200).json({ finalResult });
+    SaveResult(userId, finalResult, "Prescreening");
+    res
+      .status(200)
+      .json({ success: true, message: "Score has been saved to Database!" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });

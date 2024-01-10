@@ -3,14 +3,15 @@ import ATDQuestionsSchema from "../Models/QuestionsModel/ATDQuestionSchema.js";
 import ATDAnswerSchema from "../Models/AnswerModal/ATDAnswerSchema.js";
 import { SaveResult } from "./TestMiddle.js";
 
-export const assignUserQuestions = async (userId, req, res) => {
+export const assignUserQuestions = async (req, res) => {
   try {
+    const userId = req.user.id;
     const existingUser = await ATDAnswerSchema.findOne({ userId });
 
     if (existingUser) {
       if (existingUser._doc.isSubmitted === true) {
         return res.status(203).json({
-          message: "You have already submitted the Prescreening Test!",
+          message: "You have already submitted the ATD Test!",
         });
       }
       return res.status(200).json({
@@ -51,7 +52,7 @@ export const assignUserQuestions = async (userId, req, res) => {
 
 export const updateUserQuestion = async (req, res) => {
   try {
-    const identifier = req.params.id;
+    const identifier = req.user.id;
     const { questionId, selectedAnswer, remainingTime } = req.body;
 
     // Validate if questionId and selectedAnswer are present in the request body
@@ -62,29 +63,26 @@ export const updateUserQuestion = async (req, res) => {
       });
     }
 
-    const isObjectId = mongoose.Types.ObjectId.isValid(identifier);
-
     // Find and update the record based on userId or _id
-    let updatedPreScreeningAnswer;
-    if (isObjectId) {
+    let updateATDAnswer;
+    if (identifier) {
       // If identifier is a valid ObjectId, assume it's _id
-      updatedPreScreeningAnswer = await ATDAnswerSchema.findByIdAndUpdate(
-        identifier,
+      updateATDAnswer = await ATDAnswerSchema.findOneAndUpdate(
+        { userId: identifier, "assignedQuestions._id": questionId },
         {
           $set: {
             "assignedQuestions.$[elem].selectedAnswer": selectedAnswer,
             remainingTime,
           },
         },
-        { arrayFilters: [{ "elem._id": questionId }], new: true },
-        { new: true }
+        { arrayFilters: [{ "elem._id": questionId }], new: true }
       );
     }
 
-    if (!updatedPreScreeningAnswer) {
-      return res.status(404).json({ message: "PreScreeningAnswer not found" });
+    if (!updateATDAnswer) {
+      return res.status(404).json({ message: "ATD Answers not found" });
     }
-    res.status(201).json(updatedPreScreeningAnswer);
+    res.status(201).json(updateATDAnswer);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -93,9 +91,9 @@ export const updateUserQuestion = async (req, res) => {
 
 export const calATDResult = async (req, res) => {
   try {
-    const _id = req.params.id;
+    const userId = req.user.id;
 
-    const userAnswers = await ATDAnswerSchema.findById(_id).lean();
+    const userAnswers = await ATDAnswerSchema.findOne({ userId }).lean();;
 
     if (!userAnswers) {
       return res.status(404).json({ message: "User answers not found" });
@@ -103,19 +101,18 @@ export const calATDResult = async (req, res) => {
 
     const finalResult = await calculateResult(userAnswers);
     if (finalResult) {
-      const setIsSubmitted = await ATDAnswerSchema.findByIdAndUpdate(
-        _id,
+      const setIsSubmitted = await ATDAnswerSchema.findOneAndUpdate(
+        { userId },
         {
           $set: { isSubmitted: true },
-        },
-        { new: true }
+        }
       );
       if (setIsSubmitted) {
-        const savedResult = SaveResult(_id, finalResult, "ATD");
+        const savedResult = SaveResult(userId, finalResult, "ATD");
       }
     }
 
-    res.status(200).json({ finalResult });
+    res.status(200).json({ success: true, message: "Score has been saved to Database!" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });

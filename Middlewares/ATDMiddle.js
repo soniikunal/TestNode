@@ -80,12 +80,14 @@ export const updateUserQuestion = async (req, res) => {
     }
 
     if (!updateATDAnswer) {
-      return res.status(404).json({ message: "ATD Answers not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "ATD Answers not found" });
     }
-    res.status(201).json(updateATDAnswer);
+    res.status(201).json({ success: true });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
@@ -93,14 +95,14 @@ export const calATDResult = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const userAnswers = await ATDAnswerSchema.findOne({ userId }).lean();;
+    const userAnswers = await ATDAnswerSchema.findOne({ userId }).lean();
 
     if (!userAnswers) {
       return res.status(404).json({ message: "User answers not found" });
     }
 
     const finalResult = await calculateResult(userAnswers);
-    if (finalResult) {
+    if (finalResult >= 0) {
       const setIsSubmitted = await ATDAnswerSchema.findOneAndUpdate(
         { userId },
         {
@@ -112,7 +114,9 @@ export const calATDResult = async (req, res) => {
       }
     }
 
-    res.status(200).json({ success: true, message: "Score has been saved to Database!" });
+    res
+      .status(200)
+      .json({ success: true, message: "Submitted!" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });

@@ -9,7 +9,7 @@ const QuestionsSchema = new Schema({
   uniqueCode: {
     type: String,
     default: generateUniqueCode,
-    unique: true,
+    // unique: true,
   },
   options: {
     type: [
@@ -20,10 +20,10 @@ const QuestionsSchema = new Schema({
     // required: true,
     validate: {
       validator: function (v) {
-        return v.length <= 4;
+        return v.length <= 5;
       },
       message: (props) =>
-        `${props.value} exceeds the maximum limit of 4 options!`,
+        `${props.value} exceeds the maximum limit of 5 options!`,
     },
   },
   correctOpt: {

@@ -30,8 +30,8 @@ router.post("/typingscore", async (req, res) => {
   try {
     const { str } = req.body;
     if (userId) {
-      const savedRecord = SaveResult(userId, str, "TypingTest");
-      res.status(200).json(savedRecord);
+      const savedRecord = await SaveResult(userId, str, "TypingTest");
+      res.status(200).json({ status: true, savedRecord });
     }
   } catch (error) {
     res.status(500).json({ error });

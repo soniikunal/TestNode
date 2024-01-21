@@ -18,7 +18,7 @@ const UserSchema = new Schema(
       // unique: true,
     },
     team: {
-      type: [{ type: Schema.Types.Mixed, ref: "Teams" }],
+      // type: [{ type: Schema.Types.Mixed, ref: "Teams" }],
       // required:true
     },
     password: {

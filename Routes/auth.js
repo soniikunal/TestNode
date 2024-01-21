@@ -26,7 +26,7 @@ router.post("/register", async (req, res) => {
 
   try {
     const savedUser = await newUser.save();
-    res.status(201).json(savedUser);
+    res.status(201).json({ status: true, savedUser });
   } catch (error) {
     handleServerError(res, error);
   }
@@ -53,7 +53,7 @@ router.post("/login", async (req, res) => {
           }
         );
         const { password, ...others } = savedUser._doc;
-        res.status(201).json({ ...others, accessToken });
+        res.status(201).json({ status: true, ...others, accessToken });
       } else {
         res.status(401).json("Wrong Credentials");
       }
@@ -80,7 +80,6 @@ router.post("/examLogin", async (req, res) => {
       regid: registerId,
       email: mailId,
     };
-debugger
     const response = await axios.post(
       "https://erp.fusionfirst.com/applicant/verify",
       erpObj
@@ -107,7 +106,6 @@ debugger
       savedApplicant = await ApplicantSchema.findOne({
         AppID: erpResponse.applicant.AppID,
       });
-
       if (!savedApplicant) {
         const ApplicantData = new ApplicantSchema(erpResponse.applicant);
         savedApplicant = await ApplicantData.save();
@@ -115,7 +113,7 @@ debugger
       const accessToken = jwt.sign(
         {
           id: savedApplicant.AppID,
-          roles: "New Recruit",
+          roles: erpResponse.testType,
         },
         process.env.JWT_SECRET_KEY,
         {
@@ -131,7 +129,11 @@ debugger
         );
         return res.status(200).json({ erpResponse, accessToken, TestPending });
       }
-      return res.status(200).json({ erpResponse, accessToken });
+      const newUser = await TestScoreSchema.create({
+        userId: erpResponse.applicant.AppID,
+        name: erpResponse.applicant.name,
+      });
+      return res.status(200).json({ erpResponse, accessToken, newUser });
     }
   } catch (error) {
     res.status(500).json(error);

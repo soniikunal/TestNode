@@ -6,13 +6,16 @@ const TestScoreSchema = new Schema(
       type: String,
       required: true,
     },
-    Prescreening: {
+    name: {
       type: String,
       required: true,
+    },
+    Prescreening: {
+      type: Number,
       default: null,
     },
     ATD: {
-      type: String,
+      type: Number,
       default: null,
     },
     TypingTest: {

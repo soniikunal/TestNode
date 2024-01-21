@@ -70,7 +70,9 @@ router.put("/updateQuestion/:id", multerConfig, async (req, res) => {
       return handleNotFound(res, "Question not found");
     }
 
-    res.status(201).json(updatedQuestions);
+    res
+      .status(201)
+      .json({ message: "Question Edited Successfully!", updatedQuestions });
   } catch (error) {
     handleServerError(res, error);
   }
@@ -103,7 +105,7 @@ router.post("/submitTest", async (req, res) => {
       remainingTime: req.body.remainingTime,
     });
     const savedData = await submittedData.save();
-    res.status(201).json(savedData);
+    res.status(201).json({ success: true, savedData });
   } catch (error) {
     handleServerError(res, error);
   }

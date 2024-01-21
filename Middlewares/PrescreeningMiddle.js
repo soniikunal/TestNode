@@ -23,7 +23,7 @@ export const assignUserQuestions = async (req, res) => {
 
     // Fetch 10 random questions
     const randomQuestions = await QuestionsSchema.aggregate([
-      { $sample: { size: 10 } },
+      { $sample: { size: 100 } },
       {
         $addFields: {
           selectedOption: null,
@@ -88,13 +88,14 @@ export const updateUserQuestion = async (req, res) => {
           },
         },
         { arrayFilters: [{ "elem._id": questionId }], new: true }
-      );
+      ).lean();
     }
 
     if (!updatedPreScreeningAnswer) {
       return res.status(404).json({ message: "PreScreeningAnswer not found" });
     }
-    res.status(201).json(updatedPreScreeningAnswer);
+    const { assignedQuestions, ...others } = updatedPreScreeningAnswer;
+    res.status(201).json({ status: true });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -114,11 +115,11 @@ export const calPrescreenResult = async (req, res) => {
 
     // Perform your calculations based on the user's selected answers
     const finalResult = await calculateResult(userAnswers);
-    if (finalResult <= 0) {
+    if (finalResult >= 0) {
       // const setIsSubmitted = await PreScreeningSchema.findByIdAndUpdate(_id, {
       //   $set: { isSubmitted: true },
       // });
-      await PreScreeningSchema.findOneAndUpdate(
+      const updateResult = await PreScreeningSchema.findOneAndUpdate(
         { userId },
         {
           $set: { isSubmitted: true },
@@ -128,7 +129,7 @@ export const calPrescreenResult = async (req, res) => {
     SaveResult(userId, finalResult, "Prescreening");
     res
       .status(200)
-      .json({ success: true, message: "Score has been saved to Database!" });
+      .json({ success: true, message: "Submitted" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });

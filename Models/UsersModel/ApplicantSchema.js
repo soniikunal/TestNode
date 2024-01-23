@@ -44,6 +44,11 @@ const applicantSchema = new Schema({
     course: { type: String },
   },
   resume: { type: String },
+  referral : {
+    name : { type: String },
+    designation : { type: String },
+    number : { type: Number }
+  },
   source: { type: String },
   team: { type: [String], default: [] },
   tenth: {

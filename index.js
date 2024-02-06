@@ -9,8 +9,7 @@ const port = process.env.PORT || 3000;
 app.use(json());
 app.use(
   cors({
-    origin: ["http://localhost:5173",
-  "http://192.168.0.9:5173"],
+    origin: ["http://localhost:5173", "http://192.168.0.9:5173"],
     credentials: true,
   })
 );
@@ -46,10 +45,8 @@ app.use("/admin", categoryRoutes);
 app.use("/admin/ATD", ATDQuestionRoutes);
 app.use("/admin/userRecord", TestScoreRoutes);
 
-app.use(jwtMiddleware) //For verifying JWT
-app.use("/presTest", PrescreeningTestRoutes)
-app.use("/atdTest", ATDTestRoutes)
-
+app.use("/presTest", jwtMiddleware, PrescreeningTestRoutes);
+app.use("/atdTest", jwtMiddleware, ATDTestRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to Express Server");
